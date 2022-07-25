@@ -10,7 +10,7 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.Homeworklesson1">
         <activity
-                android:name=".cinema_selection"
+                android:name=".CinemaSelection"
                 android:exported="true"/>
         <activity
                 android:name=".MainActivity"
