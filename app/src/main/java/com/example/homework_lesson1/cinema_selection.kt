@@ -1,16 +1,15 @@
-package com.example.homeworklection1
+package com.example.homework_lesson1
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import com.example.homeworklection1.databinding.ItemCinemaBinding
+import com.example.homework_lesson1.databinding.ItemCinemaBinding
 
 class cinema_selection : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cinema_selection)
-
     }
 
     private fun createList(count: Int){
