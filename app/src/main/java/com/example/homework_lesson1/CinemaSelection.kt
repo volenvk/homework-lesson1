@@ -1,5 +1,6 @@
 package com.example.homework_lesson1
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -41,8 +42,8 @@ class CinemaSelection : AppCompatActivity() {
 
     private fun onItemSelected(view: View){
         if (view.tag as? Int == cinemaIndex) {
-//            val intent = Intent(this, ViewCinema:: class.java)
-//            startActivity(intent)
+            val intent = Intent(this, ViewCinema:: class.java)
+            startActivity(intent)
         }
     }
 
