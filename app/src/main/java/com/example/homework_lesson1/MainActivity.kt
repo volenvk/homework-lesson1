@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             cinemaBinding.cinemaImageView.setImageResource(next.second)
             cinemaBinding.cinemaTitleTextView.text = next.first
             cinemaBinding.root.tag = index
-            cinemaBinding.root.setOnClickListener { onItemSelected(it) }
+            cinemaBinding.cinemaDetailsButton.setOnClickListener { onItemSelected(it) }
             binding.root.addView(cinemaBinding.root)
             cinemaBinding
         }
@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onItemSelected(view: View){
         if (view.tag as? Int == cinemaIndex) {
-            val intent = Intent(this, ViewCinema:: class.java)
+            val intent = Intent(this, CinemaSelection:: class.java)
             startActivity(intent)
         }
     }
