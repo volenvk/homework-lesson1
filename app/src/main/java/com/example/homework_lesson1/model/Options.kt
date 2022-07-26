@@ -17,6 +17,8 @@ data class Options(val count: Int): Parcelable {
     }
 
     companion object CREATOR : Parcelable.Creator<Options> {
+        @JvmStatic val DEFAULT = Options(count = 5)
+
         override fun createFromParcel(parcel: Parcel): Options {
             return Options(parcel)
         }

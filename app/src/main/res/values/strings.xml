@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">homework-lesson1</string>
     <string name="cinema_name">cinema 1</string>
+    <string name="cinema_info">После принятия образа аватара солдат Джейк Салли становится предводителем народа нави и берет на себя миссию по защите новых друзей от корыстных бизнесменов с Земли. Теперь ему есть за кого бороться — с Джейком его прекрасная возлюбленная Нейтири. Когда на Пандору возвращаются до зубов вооруженные земляне, Джейк готов дать им отпор.</string>
     <string name="cinema_desc">cinema</string>
+    <string name="detail_hint">Детали</string>
+    <string name="check_box_like_hint">Нравится</string>
+    <string name="text_comment_label">Комментарий</string>
+    <string name="cinema_about_hint">Описание к фильму</string>
 </resources>
