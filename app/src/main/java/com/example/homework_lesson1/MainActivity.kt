@@ -36,8 +36,7 @@ class MainActivity : AppCompatActivity() {
         super.onRestart()
         if (cinemaIndex > 0) {
             val cinemaBinding = binding.root.getViewById(cinemaIndex).tag as? ItemCinemaBinding
-            cinemaBinding?.cinemaTitleTextView?.setTextColor(R.color.red.toInt())
-            this.onContentChanged()
+            cinemaBinding?.cinemaTitleTextView?.setTextColor(R.color.teal_200.toInt())
         }
     }
 
