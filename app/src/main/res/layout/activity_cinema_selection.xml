@@ -3,26 +3,27 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:layout_weight="2"
               android:orientation="vertical"
               android:padding="@dimen/constraint_default"
-              tools:background="@color/black"
-              android:background="?android:attr/selectableItemBackground">
+              android:background="@color/black">
     
     <ImageView
             android:id="@+id/cinemaImageView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitCenter"
+            android:scaleType="centerCrop"
             android:layout_weight="1"
             android:clickable="false"
             tools:src="@drawable/avatar_2"
-            android:layout_gravity="center|top"
+            android:layout_gravity="center_horizontal|top"
             android:contentDescription="@string/cinema_desc"/>
     
     <CheckBox
             android:id="@+id/cinemaLikeCheckBox"
             android:layout_width="wrap_content"
             android:layout_height="28dp"
+            android:layout_weight="0"
             android:layout_marginStart="0dp"
             android:layout_marginBottom="0dp"
             android:textColor="@color/white"
@@ -37,7 +38,7 @@
               android:text="@string/cinema_about_hint"/>
     
     <TextView
-            android:id="@+id/cinemaTitleTextView"
+            android:id="@+id/cinemaInfoTextView"
             android:layout_marginTop="0dp"
             android:typeface="normal"
             android:overScrollMode="never"
