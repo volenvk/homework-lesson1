@@ -13,27 +13,41 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var cinemaIndex by Delegates.notNull<Int>()
+    private lateinit var options: Options
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
         cinemaIndex = savedInstanceState?.getInt(KEY_CINEMA_INDEX) ?: -1
-        val options = intent.getParcelableExtra<Options>(EXTRA_OPTIONS) ?: Options.DEFAULT
+        options = intent.getParcelableExtra<Options>(KEY_OPTIONS) ?: Options.DEFAULT
 
         createCinemaList(binding, options.count)
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(KEY_OPTIONS, options)
+        outState.putInt(KEY_CINEMA_INDEX, cinemaIndex)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        if (cinemaIndex > 0) {
+            binding
+        }
+    }
+
     private fun createCinemaList(binding: ActivityMainBinding, count: Int){
         val mapIterator = image_resurces.iterator()
-        val cinemaBindings = (0 until count).map { index ->
+        val cinemaBindings = (0 until count).map {
             val cinemaBinding = ItemCinemaBinding.inflate(layoutInflater)
             cinemaBinding.root.id = View.generateViewId()
             val next = mapIterator.next()
             cinemaBinding.cinemaImageView.setImageResource(next.second)
             cinemaBinding.cinemaTitleTextView.text = next.first
-            cinemaBinding.root.tag = index
-            cinemaBinding.cinemaDetailsButton.setOnClickListener { onItemSelected(it) }
+            cinemaBinding.root.tag = next.second
+            cinemaBinding.cinemaDetailsButton.setOnClickListener { onItemSelected(cinemaBinding.root) }
             binding.root.addView(cinemaBinding.root)
             cinemaBinding
         }
@@ -41,7 +55,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onItemSelected(view: View){
-        if (view.tag as? Int == cinemaIndex) {
+        cinemaIndex = view.tag as? Int ?: -1
+        if (cinemaIndex > 0) {
             val intent = Intent(this, CinemaSelection:: class.java)
             startActivity(intent)
         }
@@ -49,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val KEY_CINEMA_INDEX = "key_cinema_index"
-        const val EXTRA_OPTIONS = "extra_options"
+        const val KEY_OPTIONS = "extra_options"
 
         val image_resurces = sequenceOf(
             "Savage" to R.drawable.savage,
