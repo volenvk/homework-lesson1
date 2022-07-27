@@ -1,7 +1,6 @@
 package com.example.homework_lesson1
 
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -9,7 +8,6 @@ import com.example.homework_lesson1.databinding.ActivityMainBinding
 import com.example.homework_lesson1.databinding.ItemCinemaBinding
 import com.example.homework_lesson1.model.CinemaData
 import com.example.homework_lesson1.model.CinemaSelectionInput
-import com.example.homework_lesson1.model.CinemaSelectionOutput
 import com.example.homework_lesson1.model.Options
 import kotlin.properties.Delegates
 

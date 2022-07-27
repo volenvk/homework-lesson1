@@ -3,14 +3,10 @@ package com.example.homework_lesson1
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.view.KeyEvent
 import androidx.activity.result.contract.ActivityResultContract
 import com.example.homework_lesson1.databinding.ActivityCinemaSelectionBinding
 import com.example.homework_lesson1.model.CinemaSelectionInput
 import com.example.homework_lesson1.model.CinemaSelectionOutput
-import com.google.android.material.textfield.TextInputEditText
-import kotlin.properties.Delegates
 
 class CinemaSelection : BaseActivity() {
 
