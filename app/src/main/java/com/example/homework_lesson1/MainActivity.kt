@@ -1,10 +1,12 @@
 package com.example.homework_lesson1
 
 import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
+import androidx.core.view.get
 import com.example.homework_lesson1.databinding.ActivityMainBinding
 import com.example.homework_lesson1.databinding.ItemCinemaBinding
 import com.example.homework_lesson1.model.Options
@@ -32,17 +34,31 @@ class MainActivity : AppCompatActivity() {
         outState.putInt(KEY_CINEMA_INDEX, cinemaIndex)
     }
 
+    override fun onResume() {
+        super.onResume()
+        setCinemaTitleColor()
+    }
+
     override fun onRestart() {
         super.onRestart()
-        if (cinemaIndex > 0) {
-            val cinemaBinding = binding.root.getViewById(cinemaIndex).tag as? ItemCinemaBinding
-            cinemaBinding?.cinemaTitleTextView?.setTextColor(R.color.teal_200.toInt())
+        recreate()
+    }
+
+    private fun setCinemaTitleColor() {
+        if (cinemaIndex >= 0) {
+            Log.d("setCinemaTitleColor", "cinemaIndex: $cinemaIndex")
+            val id = binding.flowCinema.referencedIds[cinemaIndex]
+            val cinemaBinding = binding.root.getViewById(id)?.tag as? ItemCinemaBinding
+            cinemaBinding?.let {
+                Log.d("cinemaTitleTextView", "SetTextColor: white")
+                it.cinemaTitleTextView.setTextColor(Color.WHITE)
+            }
         }
     }
 
     private fun createCinemaList(binding: ActivityMainBinding, count: Int){
         val mapIterator = image_resurces.iterator()
-        val cinemaBindings = (0 until count).map {
+        val cinemaBindings = (0 until count).map { index ->
             val cinemaBinding = ItemCinemaBinding.inflate(layoutInflater)
             cinemaBinding.root.id = View.generateViewId()
             val next = mapIterator.next()
@@ -50,17 +66,18 @@ class MainActivity : AppCompatActivity() {
             cinemaBinding.cinemaTitleTextView.text = next.first
             cinemaBinding.root.tag = cinemaBinding
             cinemaBinding.cinemaDetailsButton.setOnClickListener {
-                cinemaIndex = cinemaBinding.root.id
+                cinemaIndex = index
                 onItemSelected(next)
             }
             binding.root.addView(cinemaBinding.root)
             cinemaBinding
         }
         binding.flowCinema.referencedIds = cinemaBindings.map { it.root.id }.toIntArray()
+        Log.d("createCinemaList", "referencedIds: ${binding.flowCinema.referencedIds.size}")
     }
 
     private fun onItemSelected(pair: Pair<String, Int>){
-        if (cinemaIndex > 0) {
+        if (cinemaIndex >= 0) {
             val intent = Intent(this, CinemaSelection:: class.java)
             intent.putExtra(EXTRA_IMAGE_ID, pair.second)
             val description = mapCinemaInfo[pair.first]
