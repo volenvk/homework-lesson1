@@ -60,7 +60,7 @@
             android:textColor="@color/white"
             android:text="@string/text_comment_label"/>
     
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/cinemaCommentTextEdit"
             android:layout_width="match_parent"
             android:textColor="@color/black"
