@@ -8,6 +8,7 @@ import com.example.homework_lesson1.databinding.ActivityMainBinding
 import com.example.homework_lesson1.databinding.ItemCinemaBinding
 import com.example.homework_lesson1.model.CinemaData
 import com.example.homework_lesson1.model.CinemaSelectionInput
+import com.example.homework_lesson1.model.CinemaSelectionOutput
 import com.example.homework_lesson1.model.Options
 import kotlin.properties.Delegates
 
@@ -15,11 +16,13 @@ class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var cinemaIndex by Delegates.notNull<Int>()
+    private var cinemaSaveStates: MutableMap<Int, CinemaSelectionOutput> = mutableMapOf()
     private lateinit var options: Options
 
     private val resultCinemaSelectedLauncher = registerForActivityResult(CinemaSelection.Contract()) {
-        if (it.confirmed){
+        if (it.resultCode == RESULT_OK){
             Log.i("CinemaSelectionResult", "save like as ${it.isLike} and comment by cinema as ${it.comment}")
+            cinemaSaveStates[cinemaIndex] = it
         }
     }
 
@@ -46,7 +49,7 @@ class MainActivity : BaseActivity() {
 
     override fun onRestart() {
         super.onRestart()
-        recreate()
+        //recreate()
     }
 
     private fun setCinemaTitleColor() {
@@ -70,10 +73,7 @@ class MainActivity : BaseActivity() {
             cinemaBinding.cinemaImageView.setImageResource(next.second)
             cinemaBinding.cinemaTitleTextView.text = next.first
             cinemaBinding.root.tag = cinemaBinding
-            cinemaBinding.cinemaDetailsButton.setOnClickListener {
-                cinemaIndex = index
-                onItemSelected(next)
-            }
+            cinemaBinding.cinemaDetailsButton.setOnClickListener { showItemSelected(index, next) }
             binding.root.addView(cinemaBinding.root)
             cinemaBinding
         }
@@ -81,9 +81,15 @@ class MainActivity : BaseActivity() {
         Log.d("createCinemaList", "referencedIds: ${binding.flowCinema.referencedIds.size}")
     }
 
-    private fun onItemSelected(pair: Pair<String, Int>){
-        if (cinemaIndex >= 0) {
-            resultCinemaSelectedLauncher.launch(CinemaSelectionInput(image_id = pair.second, cinema_info = CinemaData.movies_info[pair.first]))
+    private fun showItemSelected(index:Int, pair: Pair<String, Int>){
+        if (index >= 0) {
+            cinemaIndex = index
+            resultCinemaSelectedLauncher.launch(
+                CinemaSelectionInput(
+                    image_id = pair.second,
+                    cinema_info = CinemaData.movies_info[pair.first],
+                    saveData = cinemaSaveStates[index]
+                ))
         }
     }
 

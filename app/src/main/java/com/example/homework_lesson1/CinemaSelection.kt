@@ -23,11 +23,13 @@ class CinemaSelection : BaseActivity() {
         binding = ActivityCinemaSelectionBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
         val id = intent.getIntExtra(EXTRA_IMAGE_ID, -1)
-        id.takeIf { it > 0 }?.let { binding.cinemaImageView.setImageResource(it) }
-        binding.cinemaInfoTextView.text = intent.getStringExtra(EXTRA_CINEMA_INFO) ?: throw IllegalArgumentException("Can't start without cinema description")
+        if (id < 0) throw IllegalArgumentException("Can't start without cinema poster")
+        binding.cinemaImageView.setImageResource(id)
+        val description = intent.getStringExtra(EXTRA_CINEMA_INFO) ?: throw IllegalArgumentException("Can't start without cinema description")
+        binding.cinemaInfoTextView.text = description
 
-        binding.cinemaLikeCheckBox.isChecked = savedInstanceState?.getBoolean(KEY_IS_LIKE) ?: false
-        binding.cinemaCommentTextEdit.setText(savedInstanceState?.getString(KEY_COMMENT) ?: "")
+        binding.cinemaLikeCheckBox.isChecked = savedInstanceState?.getBoolean(KEY_IS_LIKE) ?: intent.getBooleanExtra(EXTRA_IS_LIKE, false)
+        binding.cinemaCommentTextEdit.setText(savedInstanceState?.getString(KEY_COMMENT) ?: intent.getStringExtra(EXTRA_CINEMA_COMMENT))
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -62,6 +64,8 @@ class CinemaSelection : BaseActivity() {
             val intent = Intent(context, CinemaSelection:: class.java)
             intent.putExtra(EXTRA_IMAGE_ID, input?.image_id)
             intent.putExtra(EXTRA_CINEMA_INFO, input?.cinema_info)
+            input?.saveData?.isLike?.let { intent.putExtra(EXTRA_IS_LIKE, it) }
+            input?.saveData?.comment?.let { intent.putExtra(EXTRA_CINEMA_COMMENT, it) }
             return intent
         }
 
@@ -70,7 +74,7 @@ class CinemaSelection : BaseActivity() {
                 CinemaSelectionOutput(
                     isLike = it.getBooleanExtra(EXTRA_IS_LIKE, false),
                     comment = it.getStringExtra(EXTRA_CINEMA_COMMENT) ?: "",
-                    confirmed = resultCode == RESULT_OK
+                    resultCode = resultCode
                 )
             }
         }
