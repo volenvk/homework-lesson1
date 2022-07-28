@@ -8,7 +8,7 @@
               android:layout_height="match_parent">
     
     <TextView
-            android:id="@+id/autorNameTextView"
+            android:id="@+id/authorNameTextView"
             android:textStyle="bold"
             android:layout_gravity="right"
             android:layout_marginEnd="@dimen/constraint_default"
@@ -19,6 +19,7 @@
             tools:textColor="@color/darkred"
             android:layout_weight="0"/>
     <View
+            android:id="@+id/lineCommentView"
           android:layout_width="match_parent"
           android:layout_height="1dp"
           android:layout_marginRight="8dp"
