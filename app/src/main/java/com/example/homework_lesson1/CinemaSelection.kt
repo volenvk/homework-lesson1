@@ -51,12 +51,6 @@ class CinemaSelection : BaseActivity() {
         finish()
     }
 
-    private fun onToMainPressed() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        startActivity(intent)
-    }
-
     class Contract: ActivityResultContract<CinemaSelectionInput, CinemaSelectionOutput>(){
         override fun createIntent(context: Context, input: CinemaSelectionInput?): Intent {
             val intent = Intent(context, CinemaSelection:: class.java)

@@ -20,4 +20,5 @@
     <string name="check_box_like_hint">Нравится</string>
     <string name="text_comment_label">Комментарий</string>
     <string name="cinema_about_hint">Описание к фильму</string>
+    <string name="request_author_name">Введите имя</string>
 </resources>
