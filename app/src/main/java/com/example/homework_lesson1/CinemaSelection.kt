@@ -25,9 +25,7 @@ class CinemaSelection : BaseActivity() {
         val id = intent.getIntExtra(EXTRA_IMAGE_ID, -1)
         if (id < 0) throw IllegalArgumentException("Can't start without cinema poster")
         binding.cinemaImageView.setImageResource(id)
-        val description = intent.getStringExtra(EXTRA_CINEMA_INFO) ?: throw IllegalArgumentException("Can't start without cinema description")
-        binding.cinemaInfoTextView.text = description
-
+        binding.cinemaAboutTextView.setText(intent.getStringExtra(EXTRA_CINEMA_INFO) ?: throw IllegalArgumentException("Can't start without cinema description"))
         binding.cinemaLikeCheckBox.isChecked = savedInstanceState?.getBoolean(KEY_IS_LIKE) ?: intent.getBooleanExtra(EXTRA_IS_LIKE, false)
         binding.cinemaCommentTextEdit.setText(savedInstanceState?.getString(KEY_COMMENT) ?: intent.getStringExtra(EXTRA_CINEMA_COMMENT))
     }
