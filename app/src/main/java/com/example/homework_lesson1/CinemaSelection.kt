@@ -14,7 +14,7 @@ class CinemaSelection : BaseActivity() {
 
     private val resultIntent: Intent
         get() = Intent().apply {
-            putExtra(EXTRA_CINEMA_COMMENT, binding.cinemaCommentTextEdit.text.toString())
+            //putExtra(EXTRA_CINEMA_COMMENT, binding.cinemaCommentTextEdit.text.toString())
             putExtra(EXTRA_IS_LIKE, binding.cinemaLikeCheckBox.isChecked)
         }
 
@@ -27,13 +27,13 @@ class CinemaSelection : BaseActivity() {
         binding.cinemaImageView.setImageResource(id)
         binding.cinemaAboutTextView.setText(intent.getStringExtra(EXTRA_CINEMA_INFO) ?: throw IllegalArgumentException("Can't start without cinema description"))
         binding.cinemaLikeCheckBox.isChecked = savedInstanceState?.getBoolean(KEY_IS_LIKE) ?: intent.getBooleanExtra(EXTRA_IS_LIKE, false)
-        binding.cinemaCommentTextEdit.setText(savedInstanceState?.getString(KEY_COMMENT) ?: intent.getStringExtra(EXTRA_CINEMA_COMMENT))
+        //binding.cinemaCommentTextEdit.setText(savedInstanceState?.getString(KEY_COMMENT) ?: intent.getStringExtra(EXTRA_CINEMA_COMMENT))
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(KEY_IS_LIKE, binding.cinemaLikeCheckBox.isChecked)
-        outState.putString(KEY_COMMENT, binding.cinemaCommentTextEdit.text.toString())
+        //outState.putString(KEY_COMMENT, binding.cinemaCommentTextEdit.text.toString())
     }
 
     override fun onBackPressed() {

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/constraint_default"
+        android:background="@color/black"
+        tools:context=".Comments">
+    
+    
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scrollbars="vertical"
+            tools:listitem="@layout/layout_item_comment"
+            android:layout_marginBottom="@dimen/constraint_default"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/cinemaCommentTextEdit"/>
+    
+    <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/cinemaCommentTextEdit"
+            android:layout_width="0dp"
+            android:minHeight="48dp"
+            android:textColor="@color/black"
+            android:background="@color/white"
+            android:layout_height="wrap_content"
+            android:autofillHints="@string/text_comment_label"
+            android:inputType="text"
+            tools:ignore="LabelFor"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:hint="@string/text_comment_label"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    
+</androidx.constraintlayout.widget.ConstraintLayout>
