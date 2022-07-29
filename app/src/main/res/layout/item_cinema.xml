@@ -6,7 +6,6 @@
               android:orientation="vertical"
               android:gravity="center"
               android:padding="6dp"
-              tools:background="@color/black"
               android:background="?android:attr/selectableItemBackground">
     
     <ImageView
@@ -24,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:textColor="@color/purple_200"
+            android:textColor="@color/darkblue"
             tools:text="@string/cinema_name"/>
     
     <androidx.appcompat.widget.AppCompatButton
@@ -32,7 +31,6 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:typeface="monospace"
-            android:textColor="@color/black"
             android:text="@string/detail_hint"/>
     
 </LinearLayout>

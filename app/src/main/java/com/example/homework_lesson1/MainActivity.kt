@@ -7,8 +7,8 @@ import android.view.View
 import com.example.homework_lesson1.databinding.ActivityMainBinding
 import com.example.homework_lesson1.databinding.ItemCinemaBinding
 import com.example.homework_lesson1.model.CinemaData
-import com.example.homework_lesson1.model.CinemaSelectionInput
-import com.example.homework_lesson1.model.CinemaSelectionOutput
+import com.example.homework_lesson1.model.InputCinemaSelection
+import com.example.homework_lesson1.model.OutputCinemaSelection
 import com.example.homework_lesson1.model.Options
 import kotlin.properties.Delegates
 
@@ -16,12 +16,12 @@ class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var cinemaIndex by Delegates.notNull<Int>()
-    private var cinemaSaveStates: MutableMap<Int, CinemaSelectionOutput> = mutableMapOf()
+    private var cinemaSaveStates: MutableMap<Int, OutputCinemaSelection> = mutableMapOf()
     private lateinit var options: Options
 
     private val resultCinemaSelectedLauncher = registerForActivityResult(CinemaSelection.Contract()) {
         if (it.resultCode == RESULT_OK){
-            Log.i("CinemaSelectionResult", "save like as ${it.isLike} and comment by cinema as ${it.comment}")
+            Log.i("CinemaSelectionResult", "save like as ${it.isLike} and comments size: ${it.comments.size}")
             cinemaSaveStates[cinemaIndex] = it
         }
     }
@@ -85,7 +85,7 @@ class MainActivity : BaseActivity() {
         if (index >= 0) {
             cinemaIndex = index
             resultCinemaSelectedLauncher.launch(
-                CinemaSelectionInput(
+                InputCinemaSelection(
                     image_id = pair.second,
                     cinema_info = CinemaData.movies_info[pair.first],
                     saveData = cinemaSaveStates[index]

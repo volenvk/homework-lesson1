@@ -1,21 +1,16 @@
 package com.example.homework_lesson1
 
-import android.app.AlertDialog
-import android.content.DialogInterface
+import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.KeyEvent
-import android.view.WindowManager
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.homework_lesson1.databinding.ActivityCommentsBinding
-import com.example.homework_lesson1.databinding.LayoutInputAuthorBinding
-import com.example.homework_lesson1.model.CommentAuthor
-import com.example.homework_lesson1.model.CommentData
-import java.util.*
+import com.example.homework_lesson1.model.*
 import kotlin.properties.Delegates
 
 class Comments : BaseActivity() {
@@ -26,18 +21,22 @@ class Comments : BaseActivity() {
     private var liveData : MutableLiveData<CommentData>? = MutableLiveData()
     private var comments: MutableList<CommentData> = mutableListOf()
 
+    private val resultIntent: Intent get() = Intent().apply { putExtra(CinemaSelection.EXTRA_CINEMA_COMMENTS, comments.toTypedArray()) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCommentsBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
-        val saveComments = savedInstanceState?.getParcelableArray(KEY_COMMENTS) ?: intent.getParcelableArrayExtra(KEY_COMMENTS)
-        //comments =  saveComments
+        author = savedInstanceState?.getString(KEY_AUTHOR) ?: intent.getStringExtra(EXTRA_AUTHOR) ?: throw IllegalArgumentException("Can't start without author")
+        colorAuthor = savedInstanceState?.getInt(KEY_COLOR_AUTHOR) ?: intent?.getIntExtra(EXTRA_COLOR_AUTHOR, -1)?.takeIf { it > 0 } ?: throw IllegalArgumentException("Can't start without color author")
+
+        (savedInstanceState?.getParcelableArrayList<CommentData>(KEY_COMMENTS) ?: intent.getParcelableArrayListExtra(KEY_COMMENTS))?.let {
+            comments = it.toMutableList()
+        }
 
         val recyclerView = binding.commentsRecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = CommentsRecyclerAdapter(comments)
-
-        showCustomInputAlertDialog()
 
         liveData?.observe(this, Observer<CommentData> {
             comments.add(it)
@@ -45,54 +44,36 @@ class Comments : BaseActivity() {
 
         binding.cinemaCommentTextEdit.setOnKeyListener { view, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                val value: String = (view as TextView).text.toString()
+                val editText = view as TextView
+                val value: String = editText.text.toString()
                 liveData?.postValue(CommentData(author = CommentAuthor(author, colorAuthor), comment = value))
+                editText.text = ""
                 return@setOnKeyListener true
             }
             return@setOnKeyListener false
         }
     }
 
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        outState.putString(KEY_AUTHOR, author)
+        outState.putInt(KEY_COLOR_AUTHOR, colorAuthor)
         outState.putParcelableArray(KEY_COMMENTS, comments.toTypedArray())
     }
 
-    private fun showCustomInputAlertDialog() {
-        val authorBinding = LayoutInputAuthorBinding.inflate(layoutInflater)
-        authorBinding.authorInputEditText.setText(author)
-
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(TITLE_DIALOG)
-            .setView(authorBinding.root)
-            .setPositiveButton("OK", null)
-            .create()
-        dialog.setOnShowListener {
-            authorBinding.authorInputEditText.requestFocus()
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
-                val enteredText = authorBinding.authorInputEditText.text.toString()
-                if (enteredText.isBlank()) {
-                    authorBinding.authorInputEditText.error = ALERT_AUTHOR_NAME
-                    return@setOnClickListener
-                }
-                author = enteredText
-                colorAuthor = makeRandomColor()
-                updateUi()
-                dialog.dismiss()
-            }
-        }
-        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
-        dialog.show()
+    override fun onBackPressed() {
+        onSavePressed()
+        super.onBackPressed()
     }
 
-    private fun updateUi(){
-
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
-    private fun makeRandomColor(): Int{
-        val rnd = Random()
-        return Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+    private fun onSavePressed() {
+        setResult(RESULT_OK, resultIntent)
+        finish()
     }
 
     private fun onToMainPressed() {
@@ -101,9 +82,31 @@ class Comments : BaseActivity() {
         startActivity(intent)
     }
 
+    class Contract: ActivityResultContract<InputCommentData, OutputCommentData>(){
+        override fun createIntent(context: Context, input: InputCommentData?): Intent {
+            val intent = Intent(context, CinemaSelection:: class.java)
+            input?.author?.let { intent.putExtra(EXTRA_AUTHOR, it)}
+            input?.colorAuthor?.let {  intent.putExtra(EXTRA_COLOR_AUTHOR, it) }
+            return intent
+        }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): OutputCommentData? {
+            return intent?.let {
+                OutputCommentData(
+                    comments = it.getParcelableArrayListExtra<CommentData>(EXTRA_COMMENTS)?.toList() ?: listOf(),
+                    resultCode = resultCode
+                )
+            }
+        }
+    }
+
     companion object {
         const val KEY_COMMENTS = "key_comments"
-        private const val TITLE_DIALOG = "Представьтесь"
-        private const val ALERT_AUTHOR_NAME = "Пожалуйста введите свое имя"
+        const val KEY_AUTHOR = "key_author"
+        const val KEY_COLOR_AUTHOR = "key_color_author"
+
+        const val EXTRA_AUTHOR = "extra_author"
+        const val EXTRA_COLOR_AUTHOR = "extra_color_author"
+        const val EXTRA_COMMENTS = "extra_comments"
     }
 }

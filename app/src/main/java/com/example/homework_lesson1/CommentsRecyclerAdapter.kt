@@ -1,28 +1,30 @@
 package com.example.homework_lesson1
 
+import android.text.format.DateFormat
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.example.homework_lesson1.databinding.LayoutItemCommentBinding
 import com.example.homework_lesson1.model.CommentData
 
-class CommentsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
-    val authorNameTextView: TextView = itemView.findViewById(R.id.authorNameTextView)
-    val lineView: View = itemView.findViewById(R.id.lineCommentView)
-    val commentTextView: TextView = itemView.findViewById(R.id.commentTextView)
+class CommentsViewHolder(itemView: LayoutItemCommentBinding) : RecyclerView.ViewHolder(itemView.root){
+    val authorNameTextView: TextView = itemView.authorNameTextView
+    val commentTextView: TextView = itemView.commentTextView
+    val commentDateTextView: TextView = itemView.commentDateTextView
 }
 
 class CommentsRecyclerAdapter(private val comments: List<CommentData> = listOf()): RecyclerView.Adapter<CommentsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder {
-        return CommentsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_item_comment, parent, false))
+        return CommentsViewHolder(LayoutItemCommentBinding.inflate(LayoutInflater.from(parent.context)))
     }
 
     override fun onBindViewHolder(holder: CommentsViewHolder, position: Int) {
         val post = comments[position]
         holder.authorNameTextView.text = post.author.name
-        holder.authorNameTextView.setBackgroundColor(post.author.color)
+        holder.authorNameTextView.setTextColor(post.author.color)
         holder.commentTextView.text = post.comment
+        holder.commentDateTextView.text = DateFormat.format("HH:mm dd.MM.yyyy", post.date)
     }
 
     override fun getItemCount(): Int = comments.size

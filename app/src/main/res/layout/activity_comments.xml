@@ -6,7 +6,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="@dimen/constraint_default"
-        android:background="@color/black"
         tools:context=".Comments">
     
     
@@ -26,8 +25,6 @@
             android:id="@+id/cinemaCommentTextEdit"
             android:layout_width="0dp"
             android:minHeight="48dp"
-            android:textColor="@color/black"
-            android:background="@color/white"
             android:layout_height="wrap_content"
             android:autofillHints="@string/text_comment_label"
             android:inputType="text"

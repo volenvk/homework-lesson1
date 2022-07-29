@@ -1,7 +1,7 @@
 package com.example.homework_lesson1.model
 
-data class CinemaSelectionOutput(
+data class OutputCinemaSelection(
     val isLike: Boolean,
-    val comment: String,
+    val comments: List<CommentData>,
     val resultCode: Int? = null
 )
