@@ -8,4 +8,4 @@ import java.util.*
 data class CommentItem(val author: CommentAuthor, val comment: String, val date: Date = Date()) : Parcelable
 
 @Parcelize
-data class CommentAuthor(val name: String?, val color: Int?) : Parcelable
+data class CommentAuthor(val name: String, val color: Int) : Parcelable

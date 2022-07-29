@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.homework_lesson1.databinding.LayoutItemCommentBinding
-import com.example.homework_lesson1.model.CommentsData
+import com.example.homework_lesson1.model.CommentItem
 
 class CommentsViewHolder(itemView: LayoutItemCommentBinding) : RecyclerView.ViewHolder(itemView.root){
     val authorNameTextView: TextView = itemView.authorNameTextView
@@ -14,7 +14,7 @@ class CommentsViewHolder(itemView: LayoutItemCommentBinding) : RecyclerView.View
     val commentDateTextView: TextView = itemView.commentDateTextView
 }
 
-class CommentsRecyclerAdapter(private val comments: List<CommentsData> = listOf()): RecyclerView.Adapter<CommentsViewHolder>() {
+class CommentsRecyclerAdapter(private val comments: List<CommentItem> = listOf()): RecyclerView.Adapter<CommentsViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentsViewHolder {
         return CommentsViewHolder(LayoutItemCommentBinding.inflate(LayoutInflater.from(parent.context)))
     }

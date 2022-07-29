@@ -6,23 +6,18 @@ import android.util.Log
 import android.view.View
 import com.example.homework_lesson1.databinding.ActivityMainBinding
 import com.example.homework_lesson1.databinding.ItemCinemaBinding
-import com.example.homework_lesson1.model.Movies
-import com.example.homework_lesson1.model.InputCinemaSelection
-import com.example.homework_lesson1.model.OutputCinemaSelection
-import com.example.homework_lesson1.model.Options
+import com.example.homework_lesson1.model.*
 import kotlin.properties.Delegates
 
 class MainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private var cinemaIndex by Delegates.notNull<Int>()
-    private var cinemaSaveStates: MutableMap<Int, OutputCinemaSelection> = mutableMapOf()
-    private lateinit var options: Options
+    private var saveData: SaveData by Delegates.notNull()
 
     private val resultCinemaSelectedLauncher = registerForActivityResult(CinemaSelection.Contract()) {
         if (it.result_code == RESULT_OK){
-            Log.i("CinemaSelectionResult", "save like as ${it.is_like} and comments size: ${it.comments.size}")
-            cinemaSaveStates[cinemaIndex] = it
+            Log.i("CinemaSelectionResult", "save state as ${it.save_state} by index: ${saveData.index}")
+            saveData.states[saveData.index] = it.save_state
         }
     }
 
@@ -30,16 +25,14 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
-        cinemaIndex = savedInstanceState?.getInt(KEY_CINEMA_INDEX) ?: -1
-        options = intent.getParcelableExtra<Options>(KEY_OPTIONS) ?: Options.DEFAULT
+        saveData = savedInstanceState?.getParcelable(KEY_CINEMA_STATES) ?: SaveData()
 
-        createCinemaList(binding, options.count)
+        createCinemaList(binding, Options.DEFAULT.count)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putParcelable(KEY_OPTIONS, options)
-        outState.putInt(KEY_CINEMA_INDEX, cinemaIndex)
+        outState.putParcelable(KEY_CINEMA_STATES, saveData)
     }
 
     override fun onResume() {
@@ -47,15 +40,10 @@ class MainActivity : BaseActivity() {
         setCinemaTitleColor()
     }
 
-    override fun onRestart() {
-        super.onRestart()
-        //recreate()
-    }
-
     private fun setCinemaTitleColor() {
-        if (cinemaIndex >= 0) {
-            Log.d("setCinemaTitleColor", "cinemaIndex: $cinemaIndex")
-            val id = binding.flowCinema.referencedIds[cinemaIndex]
+        if (saveData.index >= 0) {
+            Log.i("setCinemaTitleColor", "cinemaIndex: ${saveData.index}")
+            val id = binding.flowCinema.referencedIds[saveData.index]
             val cinemaBinding = binding.root.getViewById(id)?.tag as? ItemCinemaBinding
             cinemaBinding?.let {
                 Log.d("cinemaTitleTextView", "SetTextColor: gray")
@@ -83,18 +71,16 @@ class MainActivity : BaseActivity() {
 
     private fun showItemSelected(index:Int, pair: Pair<String, Int>){
         if (index >= 0) {
-            cinemaIndex = index
+            saveData.index = index
             resultCinemaSelectedLauncher.launch(
-                InputCinemaSelection(
-                    image_id = pair.second,
-                    cinema_info = Movies.movies_info[pair.first],
-                    save_state = cinemaSaveStates[index]
+                CinemaSelectionRequest(
+                    cinema_info =  CinemaInfoData(pair.second, Movies.movies_info[pair.first]),
+                    save_state = saveData.states[index]
                 ))
         }
     }
 
     companion object {
-        private const val KEY_CINEMA_INDEX = "key_cinema_index"
-        private const val KEY_OPTIONS = "key_options"
+        private const val KEY_CINEMA_STATES = "key_cinema_states"
     }
 }
