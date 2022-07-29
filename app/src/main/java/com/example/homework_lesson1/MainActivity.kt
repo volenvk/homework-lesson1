@@ -6,7 +6,7 @@ import android.util.Log
 import android.view.View
 import com.example.homework_lesson1.databinding.ActivityMainBinding
 import com.example.homework_lesson1.databinding.ItemCinemaBinding
-import com.example.homework_lesson1.model.CinemaData
+import com.example.homework_lesson1.model.Movies
 import com.example.homework_lesson1.model.InputCinemaSelection
 import com.example.homework_lesson1.model.OutputCinemaSelection
 import com.example.homework_lesson1.model.Options
@@ -20,8 +20,8 @@ class MainActivity : BaseActivity() {
     private lateinit var options: Options
 
     private val resultCinemaSelectedLauncher = registerForActivityResult(CinemaSelection.Contract()) {
-        if (it.resultCode == RESULT_OK){
-            Log.i("CinemaSelectionResult", "save like as ${it.isLike} and comments size: ${it.comments.size}")
+        if (it.result_code == RESULT_OK){
+            Log.i("CinemaSelectionResult", "save like as ${it.is_like} and comments size: ${it.comments.size}")
             cinemaSaveStates[cinemaIndex] = it
         }
     }
@@ -58,14 +58,14 @@ class MainActivity : BaseActivity() {
             val id = binding.flowCinema.referencedIds[cinemaIndex]
             val cinemaBinding = binding.root.getViewById(id)?.tag as? ItemCinemaBinding
             cinemaBinding?.let {
-                Log.d("cinemaTitleTextView", "SetTextColor: white")
-                it.cinemaTitleTextView.setTextColor(Color.WHITE)
+                Log.d("cinemaTitleTextView", "SetTextColor: gray")
+                it.cinemaTitleTextView.setTextColor(Color.GRAY)
             }
         }
     }
 
     private fun createCinemaList(binding: ActivityMainBinding, count: Int){
-        val mapIterator = CinemaData.movies_posters.iterator()
+        val mapIterator = Movies.movies_posters.iterator()
         val cinemaBindings = (0 until count).map { index ->
             val cinemaBinding = ItemCinemaBinding.inflate(layoutInflater)
             cinemaBinding.root.id = View.generateViewId()
@@ -87,14 +87,14 @@ class MainActivity : BaseActivity() {
             resultCinemaSelectedLauncher.launch(
                 InputCinemaSelection(
                     image_id = pair.second,
-                    cinema_info = CinemaData.movies_info[pair.first],
-                    saveData = cinemaSaveStates[index]
+                    cinema_info = Movies.movies_info[pair.first],
+                    save_state = cinemaSaveStates[index]
                 ))
         }
     }
 
     companion object {
-        const val KEY_CINEMA_INDEX = "key_cinema_index"
-        const val KEY_OPTIONS = "key_options"
+        private const val KEY_CINEMA_INDEX = "key_cinema_index"
+        private const val KEY_OPTIONS = "key_options"
     }
 }

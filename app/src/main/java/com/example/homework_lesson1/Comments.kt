@@ -18,19 +18,21 @@ class Comments : BaseActivity() {
     private lateinit var binding: ActivityCommentsBinding
     private var author by Delegates.notNull<String>()
     private var colorAuthor by Delegates.notNull<Int>()
-    private var liveData : MutableLiveData<CommentData>? = MutableLiveData()
-    private var comments: MutableList<CommentData> = mutableListOf()
+    private var liveData : MutableLiveData<CommentItem>? = MutableLiveData()
+    private var comments: MutableList<CommentsData> = mutableListOf()
 
-    private val resultIntent: Intent get() = Intent().apply { putExtra(CinemaSelection.EXTRA_CINEMA_COMMENTS, comments.toTypedArray()) }
+    private val resultIntent: Intent get() = Intent().apply {
+        putParcelableArrayListExtra(COMMENTS_EXTRA_COMMENTS, comments.toTypedArray().toCollection(ArrayList()))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCommentsBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
-        author = savedInstanceState?.getString(KEY_AUTHOR) ?: intent.getStringExtra(EXTRA_AUTHOR) ?: throw IllegalArgumentException("Can't start without author")
-        colorAuthor = savedInstanceState?.getInt(KEY_COLOR_AUTHOR) ?: intent?.getIntExtra(EXTRA_COLOR_AUTHOR, -1)?.takeIf { it > 0 } ?: throw IllegalArgumentException("Can't start without color author")
+        author = savedInstanceState?.getString(COMMENTS_KEY_AUTHOR) ?: intent.getStringExtra(COMMENTS_EXTRA_AUTHOR) ?: throw IllegalArgumentException("Can't start without author")
+        colorAuthor = savedInstanceState?.getInt(COMMENTS_KEY_COLOR_AUTHOR) ?: intent?.getIntExtra(COMMENTS_EXTRA_COLOR_AUTHOR, 0)?.takeIf { it != 0 } ?: throw IllegalArgumentException("Can't start without color author")
 
-        (savedInstanceState?.getParcelableArrayList<CommentData>(KEY_COMMENTS) ?: intent.getParcelableArrayListExtra(KEY_COMMENTS))?.let {
+        (savedInstanceState?.getParcelableArrayList<CommentsData>(COMMENTS_KEY_COMMENTS) ?: intent.getParcelableArrayListExtra(COMMENTS_EXTRA_COMMENTS))?.let {
             comments = it.toMutableList()
         }
 
@@ -46,7 +48,7 @@ class Comments : BaseActivity() {
             if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                 val editText = view as TextView
                 val value: String = editText.text.toString()
-                liveData?.postValue(CommentData(author = CommentAuthor(author, colorAuthor), comment = value))
+                liveData?.postValue(CommentItem(author = CommentAuthor(author, colorAuthor), comment = value))
                 editText.text = ""
                 return@setOnKeyListener true
             }
@@ -56,9 +58,7 @@ class Comments : BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString(KEY_AUTHOR, author)
-        outState.putInt(KEY_COLOR_AUTHOR, colorAuthor)
-        outState.putParcelableArray(KEY_COMMENTS, comments.toTypedArray())
+        outState.putParcelable(KEY_COMMENTS, CommentData(author = CommentAuthor(name= author, color = colorAuthor), comments = comments))
     }
 
     override fun onBackPressed() {
@@ -84,29 +84,23 @@ class Comments : BaseActivity() {
 
     class Contract: ActivityResultContract<InputCommentData, OutputCommentData>(){
         override fun createIntent(context: Context, input: InputCommentData?): Intent {
-            val intent = Intent(context, CinemaSelection:: class.java)
-            input?.author?.let { intent.putExtra(EXTRA_AUTHOR, it)}
-            input?.colorAuthor?.let {  intent.putExtra(EXTRA_COLOR_AUTHOR, it) }
+            val intent = Intent(context, Comments:: class.java)
+            intent.putExtra(EXTRA_COMMENTS, CommentsData(author = CommentAuthor(name= input?.author, color = input?.color_author), comments = input?.save_state?.commentaries))
             return intent
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): OutputCommentData? {
-            return intent?.let {
+            return intent?.getParcelableExtra<CommentsData>(EXTRA_COMMENTS)?.let {
                 OutputCommentData(
-                    comments = it.getParcelableArrayListExtra<CommentData>(EXTRA_COMMENTS)?.toList() ?: listOf(),
-                    resultCode = resultCode
+                    commentaries = it.comments ?: listOf(),
+                    result_code = resultCode
                 )
             }
         }
     }
 
     companion object {
-        const val KEY_COMMENTS = "key_comments"
-        const val KEY_AUTHOR = "key_author"
-        const val KEY_COLOR_AUTHOR = "key_color_author"
-
-        const val EXTRA_AUTHOR = "extra_author"
-        const val EXTRA_COLOR_AUTHOR = "extra_color_author"
-        const val EXTRA_COMMENTS = "extra_comments"
+        private const val KEY_COMMENTS = "key_comments"
+        private const val EXTRA_COMMENTS = "extra_comments"
     }
 }

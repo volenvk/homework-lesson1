@@ -4,4 +4,4 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class CinemaData(val image_id: Int?, val cinema_info: String?): Parcelable
+data class SelectedCinemaData(val is_like: Boolean?, val commentaries: List<CommentItem>?): Parcelable

@@ -13,22 +13,21 @@ import com.example.homework_lesson1.databinding.ActivityCinemaSelectionBinding
 import com.example.homework_lesson1.databinding.LayoutInputAuthorBinding
 import com.example.homework_lesson1.model.*
 import java.util.*
+import kotlin.properties.Delegates
 
 class CinemaSelection : BaseActivity() {
 
     private lateinit var binding: ActivityCinemaSelectionBinding
-    private var comments: List<CommentData> = listOf()
+    private var saveState: SelectedCinemaData by Delegates.notNull()
 
-    private val resultIntent: Intent
-        get() = Intent().apply {
-            putExtra(EXTRA_CINEMA_COMMENTS, comments.toTypedArray())
-            putExtra(EXTRA_IS_LIKE, binding.cinemaLikeCheckBox.isChecked)
-        }
+    private val resultIntent: Intent get() = Intent().apply {
+        putExtra(EXTRA_SELECTED_CINEMA, SelectedCinemaData(is_like = binding.cinemaLikeCheckBox.isChecked, commentaries = saveState.commentaries))
+    }
 
     private val resultCinemaSelectedLauncher = registerForActivityResult(Comments.Contract()) {
-        if (it.resultCode == RESULT_OK){
-            Log.i("CommentsResult", "save comments size: ${it.comments.size}")
-            comments = it.comments
+        if (it.result_code == RESULT_OK){
+            Log.i("CommentsResult", "save comments size: ${it.commentaries.size}")
+            saveState = SelectedCinemaData(it.is_like, it.commentaries)
         }
     }
 
@@ -36,11 +35,13 @@ class CinemaSelection : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityCinemaSelectionBinding.inflate(layoutInflater).also { setContentView(it.root) }
 
-        val id = intent.getIntExtra(EXTRA_IMAGE_ID, -1)
-        if (id < 0) throw IllegalArgumentException("Can't start without cinema poster")
-        binding.cinemaImageView.setImageResource(id)
-        binding.cinemaAboutTextView.setText(intent.getStringExtra(EXTRA_CINEMA_INFO) ?: throw IllegalArgumentException("Can't start without cinema description"))
-        binding.cinemaLikeCheckBox.isChecked = savedInstanceState?.getBoolean(KEY_IS_LIKE) ?: intent.getBooleanExtra(EXTRA_IS_LIKE, false)
+        val cinemaData = intent.getParcelableExtra<CinemaData>(EXTRA_CINEMA) ?: throw IllegalArgumentException("Can't start without cinema info")
+        binding.cinemaImageView.setImageResource(cinemaData.image_id ?: throw IllegalArgumentException("Can't start without cinema poster"))
+        binding.cinemaAboutTextView.text = cinemaData.cinema_info ?: throw IllegalArgumentException("Can't start without cinema description")
+
+        val selectedData = intent.getParcelableExtra<SelectedCinemaData>(EXTRA_SELECTED_CINEMA) ?: throw IllegalArgumentException("Can't start without cave state")
+        binding.cinemaLikeCheckBox.isChecked = savedInstanceState?.getBoolean(KEY_IS_LIKE) ?: selectedData.is_like ?: false
+        comments = savedInstanceState?.getParcelableArrayList(KEY_COMMENTS) ?: selectedData.comments ?: listOf()
 
         binding.addCommentButton.setOnClickListener { showCustomInputAlertDialog() }
     }
@@ -48,7 +49,7 @@ class CinemaSelection : BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean(KEY_IS_LIKE, binding.cinemaLikeCheckBox.isChecked)
-        outState.putParcelableArray(KEY_COMMENTS, comments.toTypedArray())
+        outState.putParcelable(KEY_COMMENTS, saveState)
     }
 
     override fun onBackPressed() {
@@ -81,7 +82,13 @@ class CinemaSelection : BaseActivity() {
                     authorBinding.authorInputEditText.error = ALERT_AUTHOR_NAME
                     return@setOnClickListener
                 }
-                resultCinemaSelectedLauncher.launch(InputCommentData(author = enteredText, colorAuthor = makeRandomColor()))
+                resultCinemaSelectedLauncher.launch(
+                    InputCommentData(
+                        author = enteredText,
+                        color_author = makeRandomColor(),
+                        save_state = SelectedCinemaData(binding.cinemaLikeCheckBox.isChecked, saveState.commentaries)
+                    )
+                )
                 dialog.dismiss()
             }
         }
@@ -92,19 +99,17 @@ class CinemaSelection : BaseActivity() {
     class Contract: ActivityResultContract<InputCinemaSelection, OutputCinemaSelection>(){
         override fun createIntent(context: Context, input: InputCinemaSelection?): Intent {
             val intent = Intent(context, CinemaSelection:: class.java)
-            intent.putExtra(EXTRA_IMAGE_ID, input?.image_id)
-            intent.putExtra(EXTRA_CINEMA_INFO, input?.cinema_info)
-            input?.saveData?.isLike?.let { intent.putExtra(EXTRA_IS_LIKE, it) }
-            input?.saveData?.comments?.let { intent.putExtra(EXTRA_CINEMA_COMMENTS, it.toTypedArray()) }
+            intent.putExtra(EXTRA_CINEMA, CinemaData(image_id = input?.image_id, cinema_info = input?.cinema_info))
+            intent.putExtra(EXTRA_SELECTED_CINEMA, SelectedCinemaData(is_like = input?.save_state?.is_like, commentaries = input?.save_state?.commentaries))
             return intent
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): OutputCinemaSelection? {
-            return intent?.let {
+            return intent?.getParcelableExtra<SelectedCinemaData>(EXTRA_SELECTED_CINEMA).let {
                 OutputCinemaSelection(
-                    isLike = it.getBooleanExtra(EXTRA_IS_LIKE, false),
-                    comments = it.getParcelableArrayListExtra<CommentData>(EXTRA_CINEMA_COMMENTS)?.toList() ?: listOf(),
-                    resultCode = resultCode
+                    is_like = it?.is_like ?: false,
+                    commentaries = it?.commentaries ?: listOf(),
+                    result_code = resultCode
                 )
             }
         }
@@ -116,13 +121,13 @@ class CinemaSelection : BaseActivity() {
     }
 
     companion object {
-        const val KEY_IS_LIKE = "key_is_like"
-        const val KEY_COMMENTS = "key_comments"
-        const val EXTRA_IMAGE_ID = "extra_image_id"
-        const val EXTRA_CINEMA_INFO = "extra_cinema_info"
         private const val TITLE_DIALOG = "Представьтесь"
         private const val ALERT_AUTHOR_NAME = "Пожалуйста введите свое имя"
-        const val EXTRA_IS_LIKE = "extra_is_like"
-        const val EXTRA_CINEMA_COMMENTS = "extra_cinema_comments"
+
+        private const val KEY_IS_LIKE = "key_is_like"
+        private const val KEY_COMMENTS = "key_comments"
+
+        private const val EXTRA_CINEMA = "extra_cinema"
+        private const val EXTRA_SELECTED_CINEMA = "extra_selected_cinema"
     }
 }
