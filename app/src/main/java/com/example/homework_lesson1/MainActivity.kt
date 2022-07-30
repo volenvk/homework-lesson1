@@ -57,15 +57,17 @@ class MainActivity : BaseActivity() {
         val cinemaBindings = (0 until count).map { index ->
             val cinemaBinding = ItemCinemaBinding.inflate(layoutInflater)
             cinemaBinding.root.id = View.generateViewId()
-            val next = mapIterator.next()
-            cinemaBinding.cinemaImageView.setImageResource(next.second)
-            cinemaBinding.cinemaTitleTextView.text = next.first
-            cinemaBinding.root.tag = cinemaBinding
-            cinemaBinding.cinemaDetailsButton.setOnClickListener { showItemSelected(index, next) }
-            binding.root.addView(cinemaBinding.root)
+            if (mapIterator.hasNext()){
+                val next = mapIterator.next()
+                cinemaBinding.cinemaImageView.setImageResource(next.second)
+                cinemaBinding.cinemaTitleTextView.text = next.first
+                cinemaBinding.root.tag = cinemaBinding
+                cinemaBinding.cinemaDetailsButton.setOnClickListener { showItemSelected(index, next) }
+                binding.root.addView(cinemaBinding.root)
+            } else cinemaBinding.root.tag = null
             cinemaBinding
         }
-        binding.flowCinema.referencedIds = cinemaBindings.map { it.root.id }.toIntArray()
+        binding.flowCinema.referencedIds = cinemaBindings.filter { it.root.tag != null }.map { it.root.id }.toIntArray()
         Log.d("createCinemaList", "referencedIds: ${binding.flowCinema.referencedIds.size}")
     }
 
