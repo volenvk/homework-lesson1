@@ -100,7 +100,7 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
-        private const val LIKE_MESSAGE_CONTENT = "Мне нравиться:"
+        private const val LIKE_MESSAGE_CONTENT = "Мне нравится:"
         private const val URI_GOOGLE_PLAY_APPS = "https://play.google.com/store/apps/details?id="
 
         private const val KEY_CINEMA_STATES = "key_cinema_states"
