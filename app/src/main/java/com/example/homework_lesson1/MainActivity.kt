@@ -1,5 +1,7 @@
 package com.example.homework_lesson1
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -28,6 +30,8 @@ class MainActivity : BaseActivity() {
         saveData = savedInstanceState?.getParcelable(KEY_CINEMA_STATES) ?: SaveData()
 
         createCinemaList(binding, Options.DEFAULT.count)
+
+        binding.shareFriendsImageButton.setOnClickListener { shareFriends() }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -82,7 +86,23 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun shareFriends(){
+        val sendIntent = Intent()
+        sendIntent.action = Intent.ACTION_SEND
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "$LIKE_MESSAGE_CONTENT $URI_GOOGLE_PLAY_APPS${this.packageName}")
+        sendIntent.type = "text/plain"
+
+        val chooser = Intent.createChooser(sendIntent, title)
+        if (sendIntent.resolveActivity(packageManager) != null ){
+            startActivity(chooser)
+        }
+    }
+
     companion object {
+        private const val LIKE_MESSAGE_CONTENT = "Мне нравиться:"
+        private const val URI_GOOGLE_PLAY_APPS = "https://play.google.com/store/apps/details?id="
+
         private const val KEY_CINEMA_STATES = "key_cinema_states"
     }
 }

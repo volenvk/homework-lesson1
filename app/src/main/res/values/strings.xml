@@ -21,4 +21,5 @@
     <string name="text_comment_label">Комментарий</string>
     <string name="cinema_about_hint">Описание к фильму</string>
     <string name="request_author_name">Введите имя</string>
+    <string name="share_friends_button_desc">Пригласить друга</string>
 </resources>
