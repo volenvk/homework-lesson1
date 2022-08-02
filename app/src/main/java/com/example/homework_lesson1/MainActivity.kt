@@ -3,6 +3,7 @@ package com.example.homework_lesson1
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -88,13 +89,12 @@ class MainActivity : BaseActivity() {
 
     @SuppressLint("QueryPermissionsNeeded")
     private fun shareFriends(){
-        val sendIntent = Intent()
-        sendIntent.action = Intent.ACTION_SEND
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "$LIKE_MESSAGE_CONTENT $URI_GOOGLE_PLAY_APPS${this.packageName}")
-        sendIntent.type = "text/plain"
-
-        val chooser = Intent.createChooser(sendIntent, title)
-        if (sendIntent.resolveActivity(packageManager) != null ){
+        val chooser = Intent.createChooser(Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "$LIKE_MESSAGE_CONTENT ${Uri.parse(URI_GOOGLE_PLAY_APPS + packageName)}")
+            type = "text/plain"
+        }, title)
+        if (chooser.resolveActivity(packageManager) != null ){
             startActivity(chooser)
         }
     }
